@@ -17,11 +17,11 @@ Into this:
 
 How to use
 ----------
-1. Add a taskdef for poppy
+Add a `taskdef` for poppy
 
     <taskdef name="poppy" classname="com.poppy.Poppy" classpath="poppy.jar"/>
 
-2. Specify a classname, a destdir, and a path.
+Specify a `classname`, a `destdir`, and a neseted `path` element.
 
     <poppy classname="com.poppy.P" destdir="gen">
         <path>
