@@ -10,9 +10,14 @@ It converts this:
 
     my.property=My Property
 
+Or this:
+
+    <property name="debug" value="true"/>
+
 Into this:
 
     public static final String MY_PROPERTY = "My Property";
+    public static final boolean DEBUG = true;
 
 
 How do I use it?
