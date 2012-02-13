@@ -36,7 +36,6 @@
         <delete failonerror="false" includeEmptyDirs="true">
             <fileset dir="${classes.dir}"/>
             <fileset dir="${report.dir}"/>
-            <fileset dir="${bin.dir}"/>
             <fileset dir="${poppy.dest.dir}"/>
         </delete>
     </target>
