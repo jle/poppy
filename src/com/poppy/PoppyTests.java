@@ -4,6 +4,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildFileTest;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PropertySet;
 
 import java.io.File;
 
@@ -45,7 +46,7 @@ public class PoppyTests extends BuildFileTest {
         }
     }
 
-    public void testMissingPath() {
+    public void testMissingPathOrPropertySet() {
         try {
             final Poppy p = new Poppy();
             p.setClassname(CLASSNAME);
@@ -53,7 +54,7 @@ public class PoppyTests extends BuildFileTest {
             p.execute();
             fail(NO_EXCEPTION_THROWN);
         } catch (Exception e) {
-            assertThrowsException(Poppy.ERROR_PATH_NOT_ADDED, e);
+            assertThrowsException(Poppy.PATH_OR_PROPERTYSET_NOT_ADDED, e);
         }
     }
 
@@ -65,14 +66,40 @@ public class PoppyTests extends BuildFileTest {
         p.setDestDir("gen");
         p.addPath(new Path(project, "config/sample.properties"));
         p.execute();
+        assertGeneratedFileExists();
+    }
 
-        final File f = new File(project.getBaseDir(), "gen");
-        assertTrue("No generated directory", f.isDirectory());
-        assertTrue("No generated file", new File(f, "com/poppy/P.java").isFile());
+    public void testFileGeneratedWithPropertySet() {
+        final Poppy p = new Poppy();
+        final Project project = getProject();
+        p.setProject(project);
+        p.setClassname(CLASSNAME);
+        p.setDestDir("gen");
+        p.addPropertySet(new PropertySet());
+        p.execute();
+        assertGeneratedFileExists();
+    }
+
+    public void testFileGeneratedWithBothNested() {
+        final Poppy p = new Poppy();
+        final Project project = getProject();
+        p.setProject(project);
+        p.setClassname(CLASSNAME);
+        p.setDestDir("gen");
+        p.addPropertySet(new PropertySet());
+        p.addPath(new Path(project, "config/sample.properties"));
+        p.execute();
+        assertGeneratedFileExists();
     }
 
     private void assertThrowsException(String expectedMessage, Exception e) {
         assertEquals(BuildException.class, e.getClass());
         assertEquals("Wrong exception message", expectedMessage, e.getMessage());
+    }
+
+    private void assertGeneratedFileExists() {
+        final File f = new File(getProject().getBaseDir(), "gen");
+        assertTrue("No generated directory", f.isDirectory());
+        assertTrue("No generated file", new File(f, "com/poppy/P.java").isFile());
     }
 }

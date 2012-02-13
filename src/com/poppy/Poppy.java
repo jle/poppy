@@ -4,6 +4,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PropertySet;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
@@ -24,18 +25,20 @@ import java.util.Properties;
 public class Poppy extends Task {
     public static final String ERROR_CLASSNAME_NOT_SET = "classname not set";
     public static final String ERROR_DESTDIR_NOT_SET = "destdir not set";
-    public static final String ERROR_PATH_NOT_ADDED = "path not added";
+    public static final String PATH_OR_PROPERTYSET_NOT_ADDED = "path or propertyset not added";
     private static final String ERROR_COULD_NOT_CREATE_FILE = "Could not create file";
 
     private static final String JAVA = ".java";
     private static final String TAB_SPACE = "    ";
 
     private final ArrayList<Path> paths;
+    private final ArrayList<PropertySet> propertySets;
     private String className;
     private String destDir;
 
     public Poppy() {
         paths = new ArrayList<Path>();
+        propertySets = new ArrayList<PropertySet>();
     }
 
     /**
@@ -62,6 +65,10 @@ public class Poppy extends Task {
         paths.add(path);
     }
 
+    public void addPropertySet(PropertySet propertySet) {
+        propertySets.add(propertySet);
+    }
+
     /**
      * Processes properties and writes them out into a Java file.
      * @throws BuildException on error
@@ -84,13 +91,8 @@ public class Poppy extends Task {
             }
 
             fos.write(String.format("public class %s {\n", classInfo.simpleName).getBytes());
-            for (Path path : paths) {
-                final String[] includedFiles = path.list();
-                for (String includedFile : includedFiles) {
-                    log("Reading property file " + includedFile, Project.MSG_VERBOSE);
-                    readWrite(includedFile, fos);
-                }
-            }
+            processPropertySets(fos);
+            processPaths(fos);
             fos.write("}\n".getBytes());
             fos.flush();
         } catch (FileNotFoundException e) {
@@ -99,6 +101,45 @@ public class Poppy extends Task {
             throw new BuildException(ERROR_COULD_NOT_CREATE_FILE);
         } finally {
             close(fos);
+        }
+    }
+
+    private void processPropertySets(FileOutputStream fos) {
+        for (PropertySet propertySet : propertySets) {
+            log("Processing propertyset");
+            final Properties properties = propertySet.getProperties();
+            try {
+                writeConstant(fos, properties);
+            } catch (IOException e) {
+                log("Write error", Project.MSG_WARN);
+            }
+        }
+    }
+
+    private void processPaths(FileOutputStream fos) {
+        for (Path path : paths) {
+            final String[] includedFiles = path.list();
+            for (String includedFile : includedFiles) {
+                log("Reading property file " + includedFile, Project.MSG_VERBOSE);
+                FileInputStream fis = null;
+                try {
+                    File f = new File(includedFile);
+                    String fName = f.getName();
+                    log("Processing " + fName);
+                    fos.write(String.format(TAB_SPACE + "// %s\n", fName).getBytes());
+                    fis = new FileInputStream(f);
+                    final BufferedInputStream bis = new BufferedInputStream(fis);
+                    final Properties props = new Properties();
+                    props.load(bis);
+                    writeConstant(fos, props);
+                } catch (FileNotFoundException ignore) {
+                    log("Not found: " + includedFile, Project.MSG_WARN);
+                } catch (IOException e) {
+                    log("Load error: " + includedFile, Project.MSG_WARN);
+                } finally {
+                    close(fis);
+                }
+            }
         }
     }
 
@@ -119,29 +160,12 @@ public class Poppy extends Task {
         }
     }
 
-    private void readWrite(String filePath, FileOutputStream fos) {
-        FileInputStream fis = null;
-        try {
-            File f = new File(filePath);
-            String fName = f.getName();
-            log("Processing " + fName);
-            fos.write(String.format(TAB_SPACE + "// %s\n", fName).getBytes());
-            fis = new FileInputStream(f);
-            final BufferedInputStream bis = new BufferedInputStream(fis);
-            final Properties props = new Properties();
-            props.load(bis);
-            for (Map.Entry e : props.entrySet()) {
-                final String name = (String) e.getKey();
-                final String value = (String) e.getValue();
-                fos.write(String.format(DataType.evaluateType(name, value).getFormat(),
-                        name.replace('.', '_').toUpperCase(), value).getBytes());
-            }
-        } catch (FileNotFoundException ignore) {
-            log("Not found: " + filePath, Project.MSG_WARN);
-        } catch (IOException e) {
-            log("Load error: " + filePath, Project.MSG_WARN);
-        } finally {
-            close(fis);
+    private void writeConstant(FileOutputStream fos, Properties props) throws IOException {
+        for (Map.Entry e : props.entrySet()) {
+            final String name = (String) e.getKey();
+            final String value = (String) e.getValue();
+            fos.write(String.format(DataType.evaluateType(name, value).getFormat(),
+                    name.replace('.', '_').toUpperCase(), value).getBytes());
         }
     }
 
@@ -161,8 +185,8 @@ public class Poppy extends Task {
         if (isEmpty(this.destDir)) {
             throw new BuildException(ERROR_DESTDIR_NOT_SET);
         }
-        if (this.paths.isEmpty()) {
-            throw new BuildException(ERROR_PATH_NOT_ADDED);
+        if (this.paths.isEmpty() && this.propertySets.isEmpty()) {
+            throw new BuildException(PATH_OR_PROPERTYSET_NOT_ADDED);
         }
     }
 

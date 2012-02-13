@@ -13,6 +13,7 @@
     <property name="poppy.dest.dir" value="gen"/>
     <property name="poppy.classname" value="com.poppy.P"/>
     <property name="poppy.include.dir" value="config"/>
+    <property name="sample" value="false"/>
 
     <path id="classpath.compile">
         <fileset dir="lib">
@@ -57,6 +58,10 @@
             <path>
                 <fileset dir="${poppy.include.dir}" includes="**/*.properties"/>
             </path>
+            <propertyset>
+                <propertyref name="sample"/>
+                <propertyref prefix="poppy"/>
+            </propertyset>
         </poppy>
     </target>
 
