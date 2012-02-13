@@ -219,7 +219,7 @@ public class Poppy extends Task {
         LONG("public static final long %1$s = %2$sL;\n"),
         DOUBLE("public static final double %1$s = %2$s;\n"),
         FLOAT("public static final float %1$s = %2$sF;\n"),
-        CHAR("public static final char %1$s = \"%2$s\";\n"),
+        CHAR("public static final char %1$s = \'%2$s\';\n"),
         STRING("public static final String %1$s = \"%2$s\";\n");
 
         private final String format;
