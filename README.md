@@ -1,7 +1,7 @@
 Poppy
 =====
 
-Generates Java source code from Ant properties.
+Generates Java source code from Ant properties. Developed by [Jonathan Le][jle].
 
 What does it do?
 ----------------
@@ -19,23 +19,22 @@ Into this:
     public static final String MY_PROPERTY = "My Property";
     public static final boolean DEBUG = true;
 
+Why would I need that?
+----------------------
 
-How do I use it?
-----------------
-Add a taskdef for poppy
+There are many uses. For example, you might want to conditionally compile some code based on a property set at build
+time.
 
-    <taskdef name="poppy" classname="com.poppy.Poppy" classpath="poppy.jar"/>
+    if (DEBUG) {
+        ...
+    }
 
-Specify a classname, a destdir, and a neseted path element.
+But I'm sure you'll be able to come up with more interesting uses than that.
 
-    <poppy classname="com.poppy.P" destdir="gen">
-        <path>
-            <fileset dir="config" includes="**/*.properties"/>
-        </path>
-    </poppy>
+More Info
+---------
 
-Who is the author?
-------------------
-[Jonathan Le][jle]
+Please see the [wiki][wiki] for instructions on how to use poppy.
 
 [jle]:http://twitter.com/jle
+[wiki]:https://github.com/jonathanle/poppy/wiki
