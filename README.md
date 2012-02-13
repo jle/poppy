@@ -1,7 +1,7 @@
 Poppy
 =====
 
-Creates Java source code from Ant properties.
+Generates Java source code from Ant properties.
 
 What does it do?
 ----------------
@@ -15,13 +15,13 @@ Into this:
     public static final String MY_PROPERTY = "My Property";
 
 
-How to use
-----------
-Add a `taskdef` for poppy
+How do I use it?
+----------------
+Add a taskdef for poppy
 
     <taskdef name="poppy" classname="com.poppy.Poppy" classpath="poppy.jar"/>
 
-Specify a `classname`, a `destdir`, and a neseted `path` element.
+Specify a classname, a destdir, and a neseted path element.
 
     <poppy classname="com.poppy.P" destdir="gen">
         <path>
@@ -29,8 +29,8 @@ Specify a `classname`, a `destdir`, and a neseted `path` element.
         </path>
     </poppy>
 
-Author
-------
+Who is the author?
+------------------
 [Jonathan Le][jle]
 
 [jle]:http://twitter.com/jle
