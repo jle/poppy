@@ -48,7 +48,11 @@
     </target>
 
     <target name="jar" description="JARs the Task" depends="compile">
-        <jar destfile="${out.jar}" basedir="${classes.dir}"/>
+        <jar destfile="${out.jar}" basedir="${classes.dir}">
+            <fileset dir="." casesensitive="yes">
+                <include name="LICENSE"/>
+            </fileset>
+        </jar>
     </target>
 
     <target name="use" description="Use the Task" depends="jar">
