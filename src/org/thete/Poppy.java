@@ -120,6 +120,9 @@ public class Poppy extends Task {
             }
 
             fos.write(String.format("public class %s {\n", classInfo.simpleName).getBytes());
+            // Write a private constructor
+            fos.write((TAB_SPACE + String.format("private %s() {}\n", classInfo.simpleName))
+                    .getBytes());
             processPropertySets(fos);
             processPaths(fos);
             fos.write("}\n".getBytes());
@@ -193,8 +196,7 @@ public class Poppy extends Task {
         for (Map.Entry e : props.entrySet()) {
             final String name = (String) e.getKey();
             final String value = (String) e.getValue();
-            fos.write(String.format(DataType.evaluateType(name, value).getFormat(),
-                    name.replace('.', '_').toUpperCase(), value).getBytes());
+            DataType.write(fos, name, value);
         }
     }
 
@@ -279,6 +281,19 @@ public class Poppy extends Task {
             } else {
                 return STRING;
             }
+        }
+
+        public static void write(FileOutputStream fos, String name, String value)
+                throws IOException {
+            final DataType type = DataType.evaluateType(name, value);
+            if (!type.equals(DataType.STRING)) {
+                final int i = name.indexOf('.');
+                if (i < name.length() - 1) {
+                    name = name.substring(i + 1);
+                }
+            }
+            fos.write(String.format(type.getFormat(),
+                    name.replace('.', '_').toUpperCase(), value).getBytes());
         }
     }
 }
