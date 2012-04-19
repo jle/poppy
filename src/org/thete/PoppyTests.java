@@ -27,7 +27,7 @@
  * either expressed or implied, of the FreeBSD Project.
  */
 
-package com.poppy;
+package org.thete;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildFileTest;
@@ -42,7 +42,7 @@ import java.io.File;
  */
 public class PoppyTests extends BuildFileTest {
     private static final String NO_EXCEPTION_THROWN = "No exception thrown.";
-    public static final String CLASSNAME = "com.poppy.P";
+    public static final String CLASSNAME = "org.thete.P";
 
     public PoppyTests() {
         super();
@@ -129,6 +129,6 @@ public class PoppyTests extends BuildFileTest {
     private void assertGeneratedFileExists() {
         final File f = new File(getProject().getBaseDir(), "gen");
         assertTrue("No generated directory", f.isDirectory());
-        assertTrue("No generated file", new File(f, "com/poppy/P.java").isFile());
+        assertTrue("No generated file", new File(f, "org/thete/P.java").isFile());
     }
 }

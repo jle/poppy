@@ -40,7 +40,7 @@
     <property name="out.jar" value="${bin.dir}/${ant.project.name}.jar"/>
 
     <property name="poppy.dest.dir" value="gen"/>
-    <property name="poppy.classname" value="com.poppy.P"/>
+    <property name="poppy.classname" value="org.thete.P"/>
     <property name="poppy.include.dir" value="config"/>
     <property name="sample" value="false"/>
 
@@ -85,7 +85,7 @@
     </target>
 
     <target name="use" description="Use the Task" depends="jar">
-        <taskdef name="poppy" classname="com.poppy.Poppy" classpath="${out.jar}"/>
+        <taskdef name="poppy" classname="org.thete.Poppy" classpath="${out.jar}"/>
         <poppy classname="${poppy.classname}" destdir="${poppy.dest.dir}">
             <path>
                 <fileset dir="${poppy.include.dir}" includes="**/*.properties"/>
