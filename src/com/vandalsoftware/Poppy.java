@@ -27,7 +27,7 @@
  * either expressed or implied, of the FreeBSD Project.
  */
 
-package org.thete;
+package com.vandalsoftware;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -72,7 +72,7 @@ public class Poppy extends Task {
 
     /**
      * Sets a classname for the Java class that will be generated.
-     * @param className a fully qualified classname. e.g. org.thete.P
+     * @param className a fully qualified classname. e.g. org.vandalsoftware.P
      */
     public void setClassname(String className) {
         this.className = className;
