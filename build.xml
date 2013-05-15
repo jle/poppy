@@ -28,68 +28,18 @@
   ~ either expressed or implied, of the FreeBSD Project.
   -->
 
-<project name="poppy" basedir="." default="test">
+<project name="poppy" basedir="." default="run">
 
-    <property name="bin.dir" value="bin"/>
-    <property name="src.dir" value="src"/>
-    <property name="classes.dir" value="${bin.dir}/classes"/>
-    <property name="ant.test.lib" value="ant-testutil.jar"/>
-    <property name="report.dir"   value="report"/>
-    <property name="junit.out.dir.xml"  value="${report.dir}/junit/xml"/>
-    <property name="junit.out.dir.html" value="${report.dir}/junit/html"/>
-    <property name="out.jar" value="${bin.dir}/${ant.project.name}.jar"/>
+    <property name="build.dir" location="build"/>
+    <property name="src.dir" location="src"/>
+    <property name="classes.dir" location="${build.dir}/classes/main"/>
 
-    <property name="poppy.dest.dir" value="gen"/>
-    <property name="poppy.classname" value="org.thete.P"/>
-    <property name="poppy.include.dir" value="config"/>
+    <property name="poppy.dest.dir" location="gen"/>
+    <property name="poppy.classname" value="com.vandalsoftware.P"/>
+    <property name="poppy.include.dir" location="config"/>
     <property name="sample" value="false"/>
 
-    <path id="classpath.compile">
-        <fileset dir="lib">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
-
-    <path id="classpath.run">
-        <path path="${java.class.path}"/>
-        <path location="${classes.dir}"/>
-        <path refid="classpath.compile"/>
-    </path>
-
-    <path id="classpath.test">
-        <path refid="classpath.run"/>
-        <path location="${ant.test.lib}"/>
-    </path>
-
-    <target name="clean" description="Delete built files">
-        <delete failonerror="false" includeEmptyDirs="true">
-            <fileset dir="${classes.dir}"/>
-            <fileset dir="${report.dir}"/>
-            <fileset dir="${poppy.dest.dir}"/>
-        </delete>
-    </target>
-
-    <target name="compile" description="Compile source files">
-        <mkdir dir="${classes.dir}"/>
-        <javac srcdir="src" destdir="${classes.dir}" includeantruntime="true">
-            <classpath refid="classpath.compile"/>
-        </javac>
-    </target>
-
-    <target name="package" description="Create a jar" depends="compile">
-        <jar destfile="${out.jar}">
-            <fileset dir="${classes.dir}">
-                <include name="**/*.class"/>
-                <exclude name="**/*Test.class"/>
-                <exclude name="**/*Tests.class"/>
-            </fileset>
-            <fileset dir="." casesensitive="yes">
-                <include name="LICENSE"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <target name="run" description="Run Poppy" depends="compile">
+    <target name="run" description="Run Poppy">
         <taskdef name="poppy" classname="com.vandalsoftware.Poppy" classpath="${classes.dir}"/>
         <poppy classname="${poppy.classname}" destdir="${poppy.dest.dir}">
             <path>
@@ -101,31 +51,4 @@
             </propertyset>
         </poppy>
     </target>
-
-    <target name="junit" description="Run unit tests" depends="compile">
-        <delete dir="${junit.out.dir.xml}"/>
-        <mkdir  dir="${junit.out.dir.xml}"/>
-        <junit printsummary="yes" haltonfailure="no">
-            <classpath refid="classpath.test"/>
-            <formatter type="xml"/>
-            <batchtest fork="yes" todir="${junit.out.dir.xml}">
-                <fileset dir="${src.dir}" includes="**/*Test.java"/>
-                <fileset dir="${src.dir}" includes="**/*Tests.java"/>
-            </batchtest>
-        </junit>
-    </target>
-
-    <target name="junitreport" description="Create a report for the rest result">
-        <mkdir dir="${junit.out.dir.html}"/>
-        <junitreport todir="${junit.out.dir.html}">
-            <fileset dir="${junit.out.dir.xml}">
-                <include name="*.xml"/>
-            </fileset>
-            <report format="frames" todir="${junit.out.dir.html}"/>
-        </junitreport>
-    </target>
-
-    <target name="test"
-            depends="junit, junitreport"
-            description="Runs unit tests and creates a report" />
 </project>

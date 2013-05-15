@@ -42,7 +42,9 @@ import java.io.File;
  */
 public class PoppyTests extends BuildFileTest {
     private static final String NO_EXCEPTION_THROWN = "No exception thrown.";
-    public static final String CLASSNAME = "org.vandalsoftware.P";
+    public static final String CLASSNAME = "com.vandalsoftware.P";
+
+    private String genDir;
 
     public PoppyTests() {
         super();
@@ -52,6 +54,7 @@ public class PoppyTests extends BuildFileTest {
     protected void setUp() throws Exception {
         super.setUp();
         configureProject("build.xml");
+        this.genDir = "gen";
     }
 
     public void testMissingClassName() {
@@ -79,7 +82,7 @@ public class PoppyTests extends BuildFileTest {
         try {
             final Poppy p = new Poppy();
             p.setClassname(CLASSNAME);
-            p.setDestDir("gen");
+            p.setDestDir(this.genDir);
             p.execute();
             fail(NO_EXCEPTION_THROWN);
         } catch (Exception e) {
@@ -92,7 +95,7 @@ public class PoppyTests extends BuildFileTest {
         final Project project = getProject();
         p.setProject(project);
         p.setClassname(CLASSNAME);
-        p.setDestDir("gen");
+        p.setDestDir(this.genDir);
         p.addPath(new Path(project, "config/sample.properties"));
         p.execute();
         assertGeneratedFileExists();
@@ -103,7 +106,7 @@ public class PoppyTests extends BuildFileTest {
         final Project project = getProject();
         p.setProject(project);
         p.setClassname(CLASSNAME);
-        p.setDestDir("gen");
+        p.setDestDir(this.genDir);
         p.addPropertySet(new PropertySet());
         p.execute();
         assertGeneratedFileExists();
@@ -114,7 +117,7 @@ public class PoppyTests extends BuildFileTest {
         final Project project = getProject();
         p.setProject(project);
         p.setClassname(CLASSNAME);
-        p.setDestDir("gen");
+        p.setDestDir(this.genDir);
         p.addPropertySet(new PropertySet());
         p.addPath(new Path(project, "config/sample.properties"));
         p.execute();
@@ -127,8 +130,8 @@ public class PoppyTests extends BuildFileTest {
     }
 
     private void assertGeneratedFileExists() {
-        final File f = new File(getProject().getBaseDir(), "gen");
+        final File f = new File(getProject().getBaseDir(), this.genDir);
         assertTrue("No generated directory", f.isDirectory());
-        assertTrue("No generated file", new File(f, "org/vandalsoftware/P.java").isFile());
+        assertTrue("No generated file", new File(f, "com/vandalsoftware/P.java").isFile());
     }
 }
