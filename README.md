@@ -1,6 +1,8 @@
 Poppy
 =====
 
+[![Build Status](https://travis-ci.org/jonathanle/poppy.png)](https://travis-ci.org/jonathanle/poppy)
+
 Generates Java source code from Ant properties. Developed by [Jonathan Le][jle].
 
 What does it do?
