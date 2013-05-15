@@ -28,7 +28,7 @@
   ~ either expressed or implied, of the FreeBSD Project.
   -->
 
-<project name="poppy" basedir="." default="jar">
+<project name="poppy" basedir="." default="test">
 
     <property name="bin.dir" value="bin"/>
     <property name="src.dir" value="src"/>
@@ -52,7 +52,7 @@
 
     <path id="classpath.run">
         <path path="${java.class.path}"/>
-        <path location="${out.jar}"/>
+        <path location="${classes.dir}"/>
         <path refid="classpath.compile"/>
     </path>
 
@@ -61,7 +61,7 @@
         <path location="${ant.test.lib}"/>
     </path>
 
-    <target name="clean" description="Delete all generated files">
+    <target name="clean" description="Delete built files">
         <delete failonerror="false" includeEmptyDirs="true">
             <fileset dir="${classes.dir}"/>
             <fileset dir="${report.dir}"/>
@@ -69,23 +69,28 @@
         </delete>
     </target>
 
-    <target name="compile" description="Compiles the Task">
+    <target name="compile" description="Compile source files">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="src" destdir="${classes.dir}" includeantruntime="true">
             <classpath refid="classpath.compile"/>
         </javac>
     </target>
 
-    <target name="jar" description="JARs the Task" depends="compile">
-        <jar destfile="${out.jar}" basedir="${classes.dir}">
+    <target name="package" description="Create a jar" depends="compile">
+        <jar destfile="${out.jar}">
+            <fileset dir="${classes.dir}">
+                <include name="**/*.class"/>
+                <exclude name="**/*Test.class"/>
+                <exclude name="**/*Tests.class"/>
+            </fileset>
             <fileset dir="." casesensitive="yes">
                 <include name="LICENSE"/>
             </fileset>
         </jar>
     </target>
 
-    <target name="use" description="Use the Task" depends="jar">
-        <taskdef name="poppy" classname="org.thete.Poppy" classpath="${out.jar}"/>
+    <target name="run" description="Run Poppy" depends="compile">
+        <taskdef name="poppy" classname="com.vandalsoftware.Poppy" classpath="${classes.dir}"/>
         <poppy classname="${poppy.classname}" destdir="${poppy.dest.dir}">
             <path>
                 <fileset dir="${poppy.include.dir}" includes="**/*.properties"/>
@@ -97,7 +102,7 @@
         </poppy>
     </target>
 
-    <target name="junit" description="Runs the unit tests" depends="jar">
+    <target name="junit" description="Run unit tests" depends="compile">
         <delete dir="${junit.out.dir.xml}"/>
         <mkdir  dir="${junit.out.dir.xml}"/>
         <junit printsummary="yes" haltonfailure="no">
